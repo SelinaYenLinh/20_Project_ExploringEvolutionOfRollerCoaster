@@ -1,229 +1,297 @@
-![](./Assets/Roller_Coaster_Data_Analysis_—_Python_EDA_Project.png)
+![](Assets/Roller_Coaster_Data_Analysis_—_Python_EDA_Project.png)
+# Roller Coaster Data Analysis — Python EDA Project  
 
-### 🎢 *Exploring the evolution of roller coaster designs using Python & Pandas*
-
-## 📌 Project Overview
-
-
-This project demonstrates an end-to-end **Exploratory Data Analysis (EDA)** pipeline on a dataset of roller coasters. It highlights the trends in design, performance, and engineering characteristics over time.
-
-**Key Skills Demonstrated:**
-- Data cleaning & preprocessing (Pandas)
-- Data visualization (Matplotlib & Seaborn)
-- Aggregation & statistical analysis
-- Correlation & trend analysis by decade
-- Reporting with ydata-profiling
+*Exploring the evolution of roller coaster designs using Python*
 
 ---
 
-## 🔧 Tools & Libraries
+## 1. Project Overview  
+
+This project analyzes how roller coaster design has evolved from the late 1800s to the early 2000s using Python-based exploratory data analysis (EDA).
+
+High-level patterns:
+
+- The **late 1990s–early 2000s** were a **construction boom**, with 1999–2000 being the peak years for new coaster introductions.
+- Most coasters operate in a **mid-range speed band (~30–70 mph)**, strongly concentrated around **45–55 mph**.
+- **Steel** is the **dominant construction material**, followed by wood; other types are niche.
+- Over time, coasters have become **faster and more complex** (more inversions) while **height and G-force stay within a relatively narrow band**.
+
+The goal is to turn these patterns into **business-oriented insights** for park planning, investment, and portfolio strategy.
+
+---
+
+## 2. Tools & Dataset  
 
 ```python
-pandas, matplotlib, seaborn, ydata_profiling
+pandas, matplotlib, seaborn
 ```
 
 📁 Dataset [Download](https://www.kaggle.com/datasets/robikscube/rollercoaster-database)
 
-🧩 Step-by-Step Process
+## 3. Key Insights & Business Implications  
 
-1. 📥 Data Understanding
+**1. Year Introduced – Construction Boom Around 2000**
 
-- Load the dataset with Pandas
+![Top 10 years introduced](./Assets/image-1.png)
 
-- Explore the dataset shape, column types, and missing values
+**Key findings**
 
-- Display descriptive statistics and top rows
+- From 1995–2014, new coaster introductions increased significantly.
+- 1999 & 2000 are peak years with 45–46 new coasters each.
+- Many coasters currently operating were built ~20–25 years ago.  
 
-    ```python
-    df = pd.read_csv("coaster_db.csv")
+**Business impact**
 
-    print(df.shape)
-    print(df.head(10))
-    print(df.columns)
-    print(df.dtypes)
-    print(df.describe())
-    ```
+- A large share of the portfolio is now ageing “millennium” hardware:
+    - Rising maintenance, spare parts, and inspection costs
+    - Higher risk of downtime and guest complaints
+    - Potential safety & reputational risk if incidents occur
+- Competitors that refurbish or replace these rides earlier will gain an edge in reliability and guest perception.
 
+**Recommendations**
 
-Inspect structurer 
+- Millennium coaster health checklist
+    - Focus on coasters opened 1998–2002.
+    - For each ride: track age, downtime, maintenance cost, popularity, guest ratings.
+- 5–10 year lifecycle plan
+    - Keep & refurbish: popular and mechanically healthy → update trains, theming, queues.
+    - Major renovation: strategic rides needing track/brake/structure work.
+    - Replace: weak performers with low differentiation → plan new concepts.
+- Leverage anniversaries
+    - Use “20 years of thrills” campaigns, limited merchandise, and “upgraded edition” stories when refurbishing strong legacy coasters.
 
-2. 🧹 Data Cleaning & Preparation
+**2. Speed Distribution – Industry “Sweet Spot”**
 
-- Drop irrelevant columns to focus on key engineering and location metrics
+![Speed MPH](./Assets/image.png)
 
-    ```python
-    df = df[[
-    'coaster_name','Location','Status','Manufacturer','year_introduced', 'latitude', 'longitude','Type_Main','opening_date_clean','speed_mph','height_ft','Inversions_clean', 'Gforce_clean'
-    ]].copy()
-    ```
-- Convert data types (e.g., date fields)
+![Speed MPH histogram Kde chart](./Assets/image-2.png)
 
-    ```python
-    df["opening_date_clean"] = pd.to_datetime(df["opening_date_clean"])
-    ```
+**Key findings**
 
-- Rename columns for consistency and readability
+- Speed distribution is **right-skewed** with a strong peak around **45–55 mph**.
+- Most coasters sit in a **mid-range band 30–70 mph**.
+- **Low-speed (< 20 mph)** and **extreme (> 80 mph)** coasters are both relatively rare.
+- A **single dominant mode ~50 mph** reflects the industry’s “standard” thrill level.
 
-    ```python
-    df = df.rename(columns={
-    'coaster_name': 'Coaster Name',
-    'year_introduced': 'Year Introduced',
-    'latitude': 'Latitude',
-    'longitude': 'Longitude',
-    'Type_Main': 'Type Main',
-    'opening_date_clean': 'Opening Date Clean',
-    'speed_mph': 'Speed MPH',
-    'height_ft': 'Height FT',
-    'Inversions_clean': 'Inversions Clean',
-    'Gforce_clean': 'Gforce Clean'
-    })
-    ```
+**Business impact**
 
-- Handle missing values using mean/mode imputation
-    
-    ```python
+- **Design sweet spot**
+- 45–55 mph balances thrill, comfort, safety, and cost.
+- **Portfolio crowding**
+- A lineup of only 40–60 mph rides lacks:
+    - Very gentle **family rides**
+    - A true **headline extreme coaster**
+- **Cost vs differentiation**
+- Extreme coasters (> 80 mph) are **rare, iconic, costly**, but build brand power.
+- Mid-speed rides must elevate **capacity, theming, and reliability** to stand out.
 
-    for col in ['Latitude', 'Longitude', 'Speed MPH', 'Height FT', 'Gforce Clean']:
-    df[col] = df[col].fillna(df[col].mean())
+**Recommendations**
 
-    for col1 in ['Status', 'Manufacturer', 'Opening Date Clean']:
-    df[col1] = df[col1].fillna(df[col1].mode()[0])
-    ```
+- **Define speed segments**
+- Family: < 25 mph  
+- Moderate: 25–45 mph  
+- Thrill: 45–65 mph  
+- Extreme: > 65 mph  
+- Count rides per segment per park to **check balance**.
 
-- Remove duplicate entries
+- **Identify strategic gaps**
+- Too few family rides → invest in **low-speed, highly themed attractions**.
+- No ride above ~70 mph → add a **flagship high-speed coaster**.
 
-    ```python
-    df = df.loc[~df.duplicated(subset=['Coaster Name', 'Location', 'Opening Date Clean'])] \
-       .reset_index(drop=True)
+- **Use speed + behavior data**
+- Combine with:
+    - Queue times / throughput  
+    - Guest satisfaction  
+    - Maintenance & operating costs  
+- Check if **extreme speed** truly pays off vs **mid-speed, well-themed** rides with stronger ROI.
 
-    df = df.sort_values('Year Introduced', ascending=True) \
-       .drop_duplicates(subset=['Coaster Name', 'Location', 'Opening Date Clean'], keep='first') \
-       .reset_index(drop=True)
-    ```
-3. 📊 Exploratory Visualizations
-    
-- Yearly trends in coaster introductions
+- **Speed-based marketing**
+- Mid-range rides → emphasize **smoothness, airtime, theming**.
+- Very fast rides → highlight speed (**“one of the fastest in the region”**).
 
-    
-    ```python
-    ax = df['Year Introduced'].value_counts().head(10).plot(kind='bar', title="Top 10 Year Introduced")
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Count")
-    plt.show()
-    ```
+**3. Material Mix – Steel Dominates, Wood Differentiates**
 
+![Three Types bar](./Assets/image-3.png)
 
-![](./Assets/Top_10_Year_Introduced.png)
+**Key findings**
 
-- Distribution of coaster speeds and heights
+- The dataset is heavily dominated by **steel coasters**:  
+- Steel: 728  
+- Wood: 191  
+- Other: 71  
+- Steel ≈ **75%** of entries → **industry standard**.
+- Wooden coasters remain **significant**, while “Other” types are **niche**.
 
-    ```python
-    ax = df['Speed MPH'].plot(kind='hist', bins=20, title="Speed MPH")
-    ax.set_xlabel(["Speed MPH"])
-    ```
+**Business impact**
 
-    ![Speed MPH](./Assets/Speed_MPH_Hist.png)
+- **Steel as default**
+- Supports higher speeds/heights, complex layouts, inversions, and modern launch systems.
 
-    ```python
-    ax = df['Speed MPH'].plot(kind='kde', title="Speed MPH")
-    ax.set_xlabel('Speed MPH')
-    plt.show()
-    ```
+- **Wood as a strategic differentiator**
+- Offers a **classic / nostalgic** ride feel.
+- Can position a park with **heritage** or **old-school thrill** branding.
 
-    ![Speed MPH](./Assets/Speed_MPH_Kde.png)
+- **Niche technologies (“Other”)**
+- Great for novelty and variety, but **rarely portfolio anchors**.
 
-- Categorical distributions (e.g., coaster types)
+**Recommendations**
 
-    ```python
-    ax = df['Type Main'].value_counts().plot(kind='bar')
-    plt.show()
-    ```
+- **Compare park mix vs industry mix**
+- Nearly 100% steel → add **one iconic wooden coaster** for variety and brand depth.
+- Many wooden coasters but few steel headliners → invest in a **steel flagship**.
 
-    ![alt text](./Assets/Three_Types_Bar.png)
-    
+- **Position by material**
+- Steel: **high-tech, intense, cutting-edge**
+- Wood: **airtime, rattle/feel, nostalgia**
 
-- Scatterplots: Speed vs Height, with color by year
-    
-    ```python
-    df.plot(kind='scatter', x='Speed MPH', y='Height FT', title='Coaster Speed vs Height')
-    ```
+- **Plan CAPEX by material**
+- Steel: **higher cost**, greater flexibility for future upgrades/inversions.
+- Wood: lower stats but **strong theming & storytelling** value.
 
-    ![Coaster Speed vs Height](./Assets/Coaster_Speed_vs_Height_Plot.png)
+- **Explore hybrid concepts**
+- Steel track + wood support (e.g., **RMC-style hybrids**) to combine:
+    - **Wooden aesthetic**
+    - **Steel smoothness** and element diversity
 
-    ```python
-    ax = sns.scatterplot(x='Speed MPH', y='Height FT', hue='Year Introduced', data=df)
-    ax.set_title('Coaster Speed vs Height')
-    ```
+**4. Design Relationships – Speed, Height, Inversions, G-force**
 
-    ![Coaster Speed vs Height](./Assets/Coaster_Speed_vs_Height_SNS.png)
-    
-4. 🔗 Feature Relationships
-- Pair plots by Type
-    
-    ```python
-    sns.pairplot(df,
-             vars=['Year Introduced', 'Speed MPH', 'Height FT', 'Inversions Clean', 'Gforce Clean'],
-             hue='Type Main')
-    plt.show()
-    ```
-    ![alt text](./Assets/Pairplot_By_Types.png)
-- Correlation heatmap of key numeric features
+![Coaster Speed vs Height scatter plot with trend line](./Assets/image-4.png)
 
-    ```python
-    df_corr = df[['Year Introduced', 'Speed MPH', 'Height FT', 'Inversions Clean', 'Gforce Clean']].dropna().corr()
-    sns.heatmap(df_corr, annot=True)
-    plt.show()
-    ```
-    ![](./Assets/HeatMap.png)
-5. 📈 Advanced Trend Analysis
-- Average Speed by Coaster Type
-    ```python
-    compared = df.groupby('Type Main')['Speed MPH'].mean().sort_values(ascending=False)
+![Summary](./Assets/image-5.png)
 
-    df['Decade'] = ((df['Year Introduced'] // 10) * 10).astype('str') + "s"
+![Heat Map](./Assets/image-6.png)
 
-    avg_by_decade = df.groupby('Decade')[['Year Introduced', 'Speed MPH', 'Height FT', 'Inversions Clean', 'Gforce Clean']] \
-                    .mean().round(2).reset_index()
-    ```
+3.4 Design Relationships – Speed, Height, Inversions, G-force
 
-    ![alt text](./Assets/AVG_by_decade.png)
-- Design evolution by decade (e.g., higher speeds and heights in 2000s+)
-    
-    ```python
-    ax = avg_by_decade.plot(
-    x='Decade',
-    y=['Speed MPH', 'Height FT', 'Inversions Clean', 'Gforce Clean'],
-    kind='line',
-    marker=0,
-    title='Roller Coaster Design Trend By Decade'
-    )
-    ax.set_ylabel('Average Value')
-    plt.grid(True)
-    plt.show()
-    ```
+**Key findings**
 
-    ![alt text](./Assets/Roller_Coaster_Design_Trend_By_Decade.png)
+- **Speed vs Height**
+- Moderate positive correlation (~0.41) → taller coasters tend to be faster, but not perfectly.
+- Main cluster: **40–70 mph** and **80–160 ft** → standard thrill zone.
 
-- Multi-metric line and bar charts for insights across decades
-    
-    ```python
-    ax = avg_by_decade.plot(kind='bar', x='Decade', y='Speed MPH', title='Average Speed By Decade')
-    plt.show()
-    ```
+- **Speed / Height vs Inversions & G-force**
+- Faster coasters generally have **more inversions** and **higher G-forces**, but correlations are only mild to moderate.
+- Height alone is a **weak predictor** of intensity → **layout and elements** matter more.
 
-    ![alt text](./Assets/Average_Speed_By_Decade.png)
+- **Inversions vs G-force**
+- Positive but modest correlation (~0.22) → more inversions **≠** automatically extreme G-force.
 
-🔍 Key Insights  
-- Coaster speed and height have significantly increased over decades
+- **Year Introduced vs features**
+- Newer coasters → slightly **faster** and **more inversions**.
+- **Height and G-force remain stable** → designers keep forces within comfort/safety limits (~3–4 G).
 
-- Types of coasters (e.g., steel vs wooden) show distinct design trends
+- **By material**
+- **Steel**: dominates high speed, height, inversions, G-force → **extreme thrill platform**.
+- **Wood**: moderate speed, low-inversion → **family / classic airtime** profiles.
 
-- Modern coasters are not only faster but also more intense (higher G-force)
+**Business impact**
 
-📝 Bonus: Automated EDA Report
-- An optional HTML report was generated using ydata_profiling for deeper automated insight.
+- **Design levers**
+- Speed + layout drive thrills more than pure height → safer, cheaper ways to increase intensity.
 
-```python
-profile = ProfileReport(df, title="EDA Report")
-profile.to_file("EDA_Report.html")
-```
+- **Modernization signal**
+- Older, low-speed, low-inversion coasters risk feeling **dated** compared to modern line-ups.
+
+- **Comfort and safety**
+- Weak correlations with G-force → forces are **actively controlled** to meet comfort/regulatory standards.
+
+**Recommendations**
+
+- **Segment by intensity**
+- Use **Speed + Height + Inversions + G-force** to classify:
+    - Family / moderate  
+    - Core thrill  
+    - Extreme thrill  
+- Check park **balance** across intensities and materials.
+
+- **Upgrade levers**
+- Prioritize:
+    - **Speed tuning** (launches, steeper drops)
+    - **Layout enhancements** (new elements/inversions)
+- **Height increases** are costly with **smaller impact**.
+
+- **Target modernization**
+- Flag **older**, **low-intensity** coasters for:
+    - Re-theming  
+    - Layout modification  
+    - Replacement with modern concepts  
+
+- **Use clean, validated data**
+- Watch for **default / imputed height clusters** (e.g., ~100 ft).
+- Use verified specs for **desi**
+**5. Evolution by Decade – From Slow Classics to Modern Thrills**
+
+![Roller Coaster Design Trend By Decade](./Assets/image-7.png)
+
+![Average Speed By Decade](./Assets/image-8.png)
+
+**Key findings**
+
+- **Speed**
+- Early coasters (1880s): ~5–7 mph  
+- Industrial jump (1890s–1910s): up to 40–50 mph  
+- Since 1970s → steady growth to **50+ mph** in the 2020s  
+
+- **Height**
+- Average height **stable** at ~95–105 ft across decades  
+- Slight dip mid-century, modest rise in 2000s–2010s, then stable again  
+
+- **Inversions**
+- Near **zero before ~1970s**  
+- From 1980s → average climbs to **~2+ inversions**  
+
+- **G-force**
+- High in earliest decades → then drops and **stabilizes ~3–4 G**  
+- Only minor increases recently despite higher speeds & more inversions  
+
+**Business impact**
+
+- **Shift from “bigger” to “smarter”**
+- Modern design emphasizes speed, layout complexity, and inversions **within comfort limits**
+
+- **Rising guest expectations**
+- Thrill riders today expect **~50+ mph** and often **inversions**
+- Older low-speed, no-inversion rides risk feeling **outdated**
+
+- **Safety / comfort ceiling**
+- **G-forces capped** for comfort and regulation → differentiation must come from **layout, theming, storytelling**
+
+**Recommendations**
+
+- **Modernization roadmap by decade**
+- Flag **pre-1980s** low-speed, zero-inversion rides  
+- Options:
+    - Re-theme as **heritage/family**
+    - Modify layout (add **new elements**)
+    - Replace with **modern thrill** concepts  
+
+- **Design benchmarks for new thrill coasters**
+- Speed: **50–65 mph**  
+- Height: **100–120 ft** (unless aiming for headline giant)  
+- Inversions: **≥ 2** for thrill classification  
+- G-force: **3–4 G** for comfort/safety  
+
+- **Speed-based positioning**
+- Legacy/Nostalgic → slow, historically important  
+- Standard Thrill → near modern averages  
+- High-speed Flagship → clearly above typical speeds (**≥ 50–55 mph**)  
+- Ensure at least **one modern flagship** per park  
+
+- **Balance thrill, capacity, and comfort**
+- When increasing intensity, monitor:
+    - **Throughput**
+    - **Downtime**
+    - **Guest comfort** (smoothness, G-force, complaints)
+- Target a **sweet spot** where thrill aligns with strong ROI & guest satisfaction  
+
+## 4. Conclusion
+
+Roller coasters have evolved from **slow wooden rides** to **modern, steel-dominated thrill machines** with higher speeds and more complex layouts—while **height and G-forces remain limited** by safety and comfort constraints.
+
+By connecting **technical attributes** (speed, height, inversions, G-force, year, material) with **business priorities** (guest experience, positioning, lifecycle, ROI), parks can:
+
+- **Audit and rebalance** their ride portfolio  
+- **Prioritize** refurbishments, upgrades, and replacements  
+- **Design new attractions** that align with modern thrill expectations  
+- **Differentiate smartly** through theme, layout, and speed—rather than chasing records alone  
+
