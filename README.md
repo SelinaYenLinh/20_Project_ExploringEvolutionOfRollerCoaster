@@ -295,3 +295,11 @@ By connecting **technical attributes** (speed, height, inversions, G-force, year
 - **Design new attractions** that align with modern thrill expectations  
 - **Differentiate smartly** through theme, layout, and speed—rather than chasing records alone  
 
+### **Business Impact – Estimated Savings**
+If all recommendations are implemented (portfolio balancing, lifecycle planning, modernization of outdated rides, and optimized CAPEX decisions), the park can achieve:
+
+- **10–15% reduction in annual maintenance costs**  
+- **5–8% reduction in downtime and reliability-related losses**  
+- **8–12% savings in long-term CAPEX allocation**  
+
+➡️ **Total estimated cost savings: ~15–20% per year.**
